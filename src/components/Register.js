@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    Form, Input, Checkbox, Button
+    Form, Input, Checkbox, Button, message
 } from 'antd';
 
 class RegistrationForm extends React.Component {
@@ -13,6 +13,24 @@ class RegistrationForm extends React.Component {
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 console.log('Received values of form: ', values);
+                fetch('https://around-75015.appspot.com/api/v1/signup', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                         username : values.username,
+                         password : values.password
+                        })
+                }).then((response) => {
+                    if (response.ok) {
+                        return response;
+                    }
+                    throw new Error(response.statusText);
+                })
+                    // .then((response) => response.text()) // response.json()
+                    .then((response) => message.success('Registration Succeed!'))
+                    // console.log(response))
+                    .catch((err) => message.error('Registration Failed!'))
+                    // console.log(err))
+
             }
         });
     }
@@ -71,14 +89,14 @@ class RegistrationForm extends React.Component {
             <Form onSubmit={this.handleSubmit}>
                 <Form.Item
                     {...formItemLayout}
-                    label="Username (email)"
+                    label="Username"
                 >
-                    {getFieldDecorator('Username', {
-                        rules: [{
-                            type: 'email', message: 'The input is not valid E-mail!',
-                        }, {
-                            required: true, message: 'Please input your E-mail!',
-                        }],
+                    {getFieldDecorator('username', {
+                        rules: [
+                            {
+                            required: true, message: 'Please input your Username!',
+                            }
+                        ],
                     })(
                         <Input />
                     )}
@@ -111,14 +129,8 @@ class RegistrationForm extends React.Component {
                         <Input type="password" onBlur={this.handleConfirmBlur} />
                     )}
                 </Form.Item>
-                
-                <Form.Item {...tailFormItemLayout}>
-                    {getFieldDecorator('agreement', {
-                        valuePropName: 'checked',
-                    })(
-                        <Checkbox>I have read the <a href="">agreement</a></Checkbox>
-                    )}
-                </Form.Item>
+
+
                 <Form.Item {...tailFormItemLayout}>
                     <Button type="primary" htmlType="submit">Register</Button>
                 </Form.Item>
