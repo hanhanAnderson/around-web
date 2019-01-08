@@ -1,7 +1,8 @@
 import React from 'react'
 import {
-    Form, Input, Checkbox, Button, message
+    Form, Input,  Button, message
 } from 'antd';
+import { API_ROOT } from '../Constants';
 
 class RegistrationForm extends React.Component {
     state = {
@@ -13,7 +14,7 @@ class RegistrationForm extends React.Component {
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 console.log('Received values of form: ', values);
-                fetch('https://around-75015.appspot.com/api/v1/signup', {
+                fetch(`${API_ROOT}/signup`, {
                     method: 'POST',
                     body: JSON.stringify({
                          username : values.username,
@@ -86,7 +87,7 @@ class RegistrationForm extends React.Component {
 
 
         return (
-            <Form onSubmit={this.handleSubmit}>
+            <Form className = 'register' onSubmit={this.handleSubmit}>
                 <Form.Item
                     {...formItemLayout}
                     label="Username"
