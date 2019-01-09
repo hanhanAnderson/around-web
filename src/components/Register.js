@@ -31,12 +31,10 @@ class RegistrationForm extends React.Component {
                     .then((response) => {
                         message.success('Registration Succeed!');
                         this.props.history.push('/login');
-                })
-                    
+                })       
                     // console.log(response))
                     .catch((err) => message.error('Registration Failed!'))
                     // console.log(err))
-
             }
         });
     }
