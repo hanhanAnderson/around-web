@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import {TopBar} from './TopBar';
 import {Main} from './Main';
+import {TOKEN_KEY} from '../Constants'
 import '../styles/App.css';
 
-const TOKEN_KEY = 'TOKEN_KEY';
 
 class App extends Component {
   state = {

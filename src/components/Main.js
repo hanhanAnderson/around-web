@@ -6,23 +6,27 @@ import { Switch, Route, Redirect } from 'react-router-dom'
 import { Link } from 'react-router-dom';
 
 export class Main extends React.Component {
-    getLogin = () => {
+    getRedirect = () => {
         return (this.props.isLoggedin ?
              <Redirect to="/home" /> : <Redirect to="/login" />
         )
     }
-    renderLogin = () => {
-        return <Login handleLogin={this.props.handleLogin} />
+    getLogin = () => {
+        return this.props.isLoggedin ? <Redirect to= "/home" /> :
+        <Login handleLogin={this.props.handleLogin} />
+    }
+    getHome = () => {
+        return this.props.isLoggedin ? <Home /> : <Redirect to="/login" />
     }
     render() {
         return (
             <div className='main'>
                 <Switch>
-                    <Route exact path="/" render={this.getLogin} />
-                    <Route path="/login" component={this.renderLogin} />
+                    <Route exact path="/" render={this.getRedirect} />
+                    <Route path="/login" component={this.getLogin} />
                     <Route path="/register" component={Register} />
-                    <Route path="/home" component={Home} />
-                    <Route render={this.getLogin} />
+                    <Route path="/home" render={this.getHome} />
+                    <Route render={this.getRedirect} />
                 </Switch>
             </div>
         );
