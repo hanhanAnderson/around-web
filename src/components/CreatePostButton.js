@@ -38,17 +38,18 @@ export class CreatePostButton extends React.Component {
                     headers: {
                         Authorization: `${AUTH_HEADER} ${token}`,
                     }
-                }).then((response) => {
-                    if (response.ok) {
-                        this.form.resetFields();
-                        this.setState({
-                            visible: false,
-                            confirmLoading: false
-                        });
-                        return this.props.loadNearbyPosts();
-                    }
-                    throw new Error(response.statusText);
                 })
+                    .then((response) => {
+                        if (response.ok) {
+                            this.form.resetFields();
+                            this.setState({
+                                visible: false,
+                                confirmLoading: false
+                            });
+                            return this.props.loadNearbyPosts();
+                        }
+                        throw new Error(response.statusText);
+                    })
                     .then(() => message.success('Post created successfully!'))
                     .catch((e) => {
                         console.log(e);

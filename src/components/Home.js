@@ -2,7 +2,8 @@ import React from 'react';
 import { Tabs, Button, Spin } from 'antd';
 import { API_ROOT, TOKEN_KEY, AUTH_HEADER, GEO_OPTIONS, POST_KEY } from '../Constants';
 import { Gallery } from './Gallery';
-import {CreatePostButton} from './CreatePostButton'
+import { CreatePostButton } from './CreatePostButton';
+import { AroundMap } from './AroundMap';
 
 const TabPane = Tabs.TabPane;
 
@@ -11,7 +12,7 @@ export class Home extends React.Component {
         isLoadingGeoLocation: false,
         isLoadingPosts: false,
         error: '',
-        posts:[]
+        posts: []
     }
     componentDidMount() {
         if ("geolocation" in navigator) {
@@ -42,8 +43,9 @@ export class Home extends React.Component {
             error: 'Failed to Load Geo-Location',
         });
     }
-    loadNearbyPosts = () => {
-        const { lat, lon } = JSON.parse(localStorage.getItem(POST_KEY));
+    loadNearbyPosts = (center, radius) => {
+        const { lat, lon } = center ||  JSON.parse(localStorage.getItem(POST_KEY));
+        const range = radius || 2000;
         this.setState({ isLoadingPosts: true });
         const token = localStorage.getItem(TOKEN_KEY);
         // fetch(`${API_ROOT}/search?lat=${lat}&lon=${lon}&range=20000`, {
@@ -69,7 +71,7 @@ export class Home extends React.Component {
         //             error: error.message 
         //         }) }
         //     );
-        fetch(`${API_ROOT}/search?lat=${lat}&lon=${lon}&range=20000`, {
+        fetch(`${API_ROOT}/search?lat=${lat}&lon=${lon}&range=${range}`, {
             method: 'GET',
             headers: {
                 Authorization: `${AUTH_HEADER} ${token}`,
@@ -81,7 +83,7 @@ export class Home extends React.Component {
             throw new Error('Failed to load posts.');
         }).then((data) => {
             console.log(data);
-            this.setState({posts: data ? data : [], isLoadingPosts: false });
+            this.setState({ posts: data ? data : [], isLoadingPosts: false });
         }).catch((e) => {
             console.log(e.message);
             this.setState({ isLoadingPosts: false, error: e.message });
@@ -97,38 +99,47 @@ export class Home extends React.Component {
     getImagePosts = () => {
         const { error, isLoadingGeoLocation, isLoadingPosts, posts } = this.state;
         if (error) {
-          return <div>{error}</div>
-        } else if(isLoadingGeoLocation) {
-          return <Spin tip="Loading geo location..."/>
+            return <div>{error}</div>
+        } else if (isLoadingGeoLocation) {
+            return <Spin tip="Loading geo location..." />
         } else if (isLoadingPosts) {
-          return <Spin tip="Loading posts..." />
+            return <Spin tip="Loading posts..." />
         } else if (this.state.posts.length > 0) {
-          const images = this.state.posts.map((post) => {
-            return {
-              user: post.user,
-              src: post.url,
-              thumbnail: post.url,
-              caption: post.message,
-              thumbnailWidth: 400,
-              thumbnailHeight: 300,
-            }
-          });
-          return (<Gallery images={images}/>);
+            const images = this.state.posts.map((post) => {
+                return {
+                    user: post.user,
+                    src: post.url,
+                    thumbnail: post.url,
+                    caption: post.message,
+                    thumbnailWidth: 400,
+                    thumbnailHeight: 300,
+                }
+            });
+            return (<Gallery images={images} />);
         } else {
-          return 'No nearby posts.';
+            return 'No nearby posts.';
         }
-      }
-     
+    }
+
 
     render() {
         console.log('state', this.state);
-        const operations = <CreatePostButton loadNearbyPosts={this.loadNearbyPosts}/>;
+        const operations = <CreatePostButton loadNearbyPosts={this.loadNearbyPosts} />;
         return (
             <Tabs className="main-tabs" tabBarExtraContent={operations}>
                 <TabPane tab="Posts" key="1">
                     {this.getImagePosts()}
                 </TabPane>
-                <TabPane tab="Map" key="2">Map</TabPane>
+                <TabPane tab="Map" key="2">
+                    <AroundMap 
+                          isMarkerShown
+                          googleMapURL="https://maps.googleapis.com/maps/api/js?key=AIzaSyCckcZPKvejFZihOIXvYVzZKDiiV01rxbc&v=3.exp&libraries=geometry,drawing,places"
+                          loadingElement={<div style={{ height: `100%` }} />}
+                          containerElement={<div style={{ height: `600px` }} />}
+                          mapElement={<div style={{ height: `100%` }} />}
+                          posts = {this.state.posts}
+                    />
+                </TabPane>
             </Tabs>
         )
     }

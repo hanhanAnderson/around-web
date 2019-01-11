@@ -5,6 +5,8 @@
 @import './styles/Register.css';
 @import './styles/TopBar.css';
 @import './styles/Home.css';
+@import './styles/AroundMarker.css';
+
 body {
   margin: 0;
   padding: 0;
