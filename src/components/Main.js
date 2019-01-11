@@ -3,7 +3,6 @@ import { Register } from './Register'
 import { Login } from './Login';
 import { Home } from './Home';
 import { Switch, Route, Redirect } from 'react-router-dom'
-import { Link } from 'react-router-dom';
 
 export class Main extends React.Component {
     getRedirect = () => {
