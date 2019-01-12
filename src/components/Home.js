@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tabs, Button, Spin, Row, Col, Radio } from 'antd';
+import { Tabs, Spin, Row, Col, Radio } from 'antd';
 import { API_ROOT, TOKEN_KEY, AUTH_HEADER, GEO_OPTIONS, POST_KEY } from '../Constants';
 import { Gallery } from './Gallery';
 import { CreatePostButton } from './CreatePostButton';
@@ -94,7 +94,7 @@ export class Home extends React.Component {
     }
 
     getPanelContent = (type) => {
-        const { error, isLoadingGeoLocation, isLoadingPosts, posts } = this.state;
+        const { error, isLoadingGeoLocation, isLoadingPosts } = this.state;
         if (error) {
             return <div>{error}</div>
         } else if (isLoadingGeoLocation) {
@@ -127,8 +127,7 @@ export class Home extends React.Component {
 
         return (
             <Row gutter ={32}>
-                    {this.state.posts.
-                    filter(post => post.type === "video")
+                    {this.state.posts.filter(post => post.type === "video")
                     .map(post =>( <Col span = {6} key = {post.url}> 
                         <video src = {post.url} controls className = "video-block"/>
                         <p>{`${post.user}: ${post.message}`} </p>

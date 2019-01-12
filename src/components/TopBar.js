@@ -6,14 +6,14 @@ export class TopBar extends React.Component {
         return (
             <header className="App-header">
                 <img src={logo} className="App-logo" alt="logo" />
-                <span className="App-title"> Around Web</span>
+                <div className="App-title"> Around Web</div>
                 {this.props.isLoggedin ?
-                    (<a 
+                    <a href="topbar"
                     className = "logout"
                     onClick={this.props.handleLogout}>
                     <Icon type="logout" />
                         {' '}Logout
-                </a>) : null}
+                </a> : null}
             </header>
         );
     }
