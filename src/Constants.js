@@ -8,5 +8,5 @@ export const GEO_OPTIONS = {
     maximumAge: 27000
 };
 export const POST_KEY = 'POST_KEY';
-
 export const POS_KEY = 'POS_KEY';
+export const LOC_SHAKE = 0.02;
