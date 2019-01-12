@@ -45,7 +45,7 @@ export class NormalAroundMap extends React.Component {
             ref = {this.getMapRef}
           >
                 {
-                    this.props.posts.map(
+                    this.props.posts &&this.props.posts.length >0 && this.props.posts.map(
                         post =>  (<AroundMarker post = {post} key = {post.url}/> )
                     )
                 }

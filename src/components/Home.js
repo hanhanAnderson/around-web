@@ -1,17 +1,20 @@
 import React from 'react';
-import { Tabs, Button, Spin } from 'antd';
+import { Tabs, Button, Spin, Row, Col, Radio } from 'antd';
 import { API_ROOT, TOKEN_KEY, AUTH_HEADER, GEO_OPTIONS, POST_KEY } from '../Constants';
 import { Gallery } from './Gallery';
 import { CreatePostButton } from './CreatePostButton';
 import { AroundMap } from './AroundMap';
 
 const TabPane = Tabs.TabPane;
+const RadioGroup = Radio.Group;
 
 export class Home extends React.Component {
     state = {
         isLoadingGeoLocation: false,
         isLoadingPosts: false,
         error: '',
+        post: [],
+        topic : "around",
     }
     componentDidMount() {
         if ("geolocation" in navigator) {
@@ -45,7 +48,7 @@ export class Home extends React.Component {
     loadNearbyPosts = (center, radius) => {
         const { lat, lon } = center ||  JSON.parse(localStorage.getItem(POST_KEY));
         const range = radius || 2000;
-        this.setState({ isLoadingPosts: true });
+        
         const token = localStorage.getItem(TOKEN_KEY);
         // fetch(`${API_ROOT}/search?lat=${lat}&lon=${lon}&range=20000`, {
         //     method: 'GET',
@@ -70,6 +73,7 @@ export class Home extends React.Component {
         //             error: error.message 
         //         }) }
         //     );
+        this.setState({ isLoadingPosts: true });
         fetch(`${API_ROOT}/search?lat=${lat}&lon=${lon}&range=${range}`, {
             method: 'GET',
             headers: {
@@ -120,13 +124,63 @@ export class Home extends React.Component {
         return (<Gallery images={images} />);
     }
     getVideoPosts = () => {
-        return <div>video</div>
-    }
 
+        return (
+            <Row gutter ={32}>
+                    {this.state.posts.
+                    filter(post => post.type === "video")
+                    .map(post =>( <Col span = {6} key = {post.url}> 
+                        <video src = {post.url} controls className = "video-block"/>
+                        <p>{`${post.user}: ${post.message}`} </p>
+                        </Col>))
+                    }
+                
+            </Row>
+        )
+    }
+    onTopicChange = (e) =>{
+        const topic = e.target.value;
+        this.setState({
+            topic
+        })
+        if(topic === 'face') {
+            this.loadFacesAroundTheWorld();
+        } else {
+            this.loadNearbyPosts();
+        }
+    }
+    loadFacesAroundTheWorld = () => {
+        this.setState({ isLoadingPosts: true });
+        const token = localStorage.getItem(TOKEN_KEY);
+        fetch(`${API_ROOT}/cluster?term=face`, {
+            method: 'GET',
+            headers: {
+                Authorization: `${AUTH_HEADER} ${token}`,
+            },
+        }).then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Failed to load posts.');
+        }).then((data) => {
+            console.log(data);
+            this.setState({ posts: data ? data : [], isLoadingPosts: false });
+        }).catch((e) => {
+            console.log(e.message);
+            this.setState({ isLoadingPosts: false, error: e.message });
+        });
+    }
     render() {
         console.log('state', this.state);
         const operations = <CreatePostButton loadNearbyPosts={this.loadNearbyPosts} />;
         return (
+        <div>
+            <RadioGroup onChange={this.onTopicChange} value = {this.state.topic}>
+                <Radio value ="around"> Post Around Me
+                </Radio>
+                <Radio value ="face"> Faces Around the World
+                </Radio>
+            </RadioGroup>
             <Tabs className="main-tabs" tabBarExtraContent={operations}>
                 <TabPane tab="Image Posts" key="1">
                     {this.getPanelContent("image")}
@@ -146,6 +200,7 @@ export class Home extends React.Component {
                     />
                 </TabPane>
             </Tabs>
+        </div>
         )
     }
 }
